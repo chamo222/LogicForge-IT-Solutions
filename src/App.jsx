@@ -6,6 +6,8 @@ import Services from './pages/services/Services';
 import Support from './pages/support/Support';
 import Signin from './pages/signin/Signin';
 import Signup from './pages/signup/Signup';
+import Admin from './pages/admin/Admin';
+import GetInTouch from './pages/getintouch/GetInTouch';
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
           <Route path="/support" element={<Support />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/admin" element={<Admin />} />
+           <Route path="/get-in-touch" element={<GetInTouch />} />
         </Routes>
         <Footer />
       </main>

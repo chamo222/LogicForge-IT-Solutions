@@ -2,6 +2,7 @@ import React from "react";
 import RootLayout from "../../layout/RootLayout";
 import { motion } from "framer-motion";
 import { FaCode, FaMobileAlt, FaCloud, FaLock, FaRocket, FaUsers } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const services = [
   {
@@ -117,13 +118,13 @@ const Services = () => {
           >
             Ready to bring your ideas to life?
           </motion.h3>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-red-500 text-white font-semibold rounded-xl shadow-lg hover:bg-red-600 transition"
-          >
-            Get in Touch
-          </motion.button>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link to="/get-in-touch">
+              <button className="px-8 py-4 bg-red-500 text-white font-semibold rounded-xl shadow-lg hover:bg-red-600 transition">
+                Get in Touch
+              </button>
+            </Link>
+          </motion.div>
         </RootLayout>
       </section>
     </div>
