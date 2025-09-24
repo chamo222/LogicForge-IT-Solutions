@@ -1,82 +1,230 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { FaBars, FaTimes, FaUser, FaHeart, FaShoppingCart, FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useUser, UserButton } from "@clerk/clerk-react";
 
-import Logo from "../../assets/logo.png"
-import { LiaTimesSolid } from 'react-icons/lia';
-import { FaBars, FaPhone } from 'react-icons/fa6';
-import Theme from '../theme/Theme';
+const menuItems = [
+  {
+    title: "POS Solution",
+    link: "#",
+    subMenu: [
+      { title: "POS Terminals", link: "#" },
+      { title: "Cash Register", link: "#" },
+      { title: "POS Printers", link: "#" },
+      { title: "Mobile Printers", link: "#" },
+      { title: "Cash Drawer", link: "#" },
+      { title: "Cash Counting Machine", link: "#" },
+      { title: "POS Software Solution", link: "#" },
+    ],
+  },
+  {
+    title: "Barcode Solution",
+    link: "#",
+    subMenu: [
+      {
+        title: "Barcode Scanners",
+        link: "#",
+        subMenu: [
+          { title: "Desktop Barcode Scanner", link: "#" },
+          { title: "Handheld Barcode Scanner", link: "#" },
+          { title: "Wireless Barcode Scanners", link: "#" },
+        ],
+      },
+      {
+        title: "Barcode Label Printers",
+        link: "#",
+        subMenu: [
+          { title: "Barcode Label Printers", link: "#" },
+          { title: "Industrial Label Printers", link: "#" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "PC & Printer Solution",
+    link: "#",
+    subMenu: [
+      { title: "All in one PC", link: "#" },
+      { title: "Monitor", link: "#" },
+      {
+        title: "Gaming Solution",
+        link: "#",
+        subMenu: [
+          { title: "Graphics Card", link: "#" },
+          { title: "Power Supply", link: "#" },
+          { title: "Keyboard and Mouse", link: "#" },
+        ],
+      },
+      {
+        title: "Printers Solution",
+        link: "#",
+        subMenu: [
+          { title: "A4 Printers", link: "#" },
+          { title: "Card Printer", link: "#" },
+        ],
+      },
+    ],
+  },
+  { title: "Services", link: "/services" },
+  { title: "Support", link: "/support" },
+];
 
-const Navbar = () => {
+function Navbar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [openSubMenus, setOpenSubMenus] = useState({}); // Track mobile submenu open state
+  const { isSignedIn } = useUser();
 
-    const [open, setOpen] = React.useState(false);
+  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
-    const navLinks = [
-        { href: "/", label: "Home" },
-        { href: "/about", label: "About" },
-        { href: "/bus", label: "Bus" },
-        { href: "/services", label: "Services" },
-    ]
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    window.location.href = `https://synnex.lk/?s=${encodeURIComponent(searchQuery)}&post_type=product`;
+  };
 
-    const handleClick = () => {
-        setOpen(!open);
-    }
+  const toggleSubMenu = (title) => {
+    setOpenSubMenus((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
 
-    const handleClose = () => {
-        setOpen(false);
-    }
-
-    return (
-        <div className='w-full h-[8ch] bg-neutral-100 dark:bg-neutral-900 flex items-center md:flex-row lg:px-28 md:px-16 sm:px-7 px-4 fixed top-0 z-50'>
-            {/* Logo section */}
-            <Link to={"/"} className='mr-16'>
-                <img src={Logo} alt="logo" className="w-28 h-auto object-contain" />
-            </Link>
-
-            {/* Toggle button */}
-            <button onClick={handleClick} className="flex-1 lg:hidden text-neutral-600 dark:text-neutral-300 ease-in-out duration-300 flex items-center justify-end">
-                {
-                    open ?
-                        <LiaTimesSolid className='text-xl' />
-                        :
-                        <FaBars className='text-xl' />
+  const renderMenu = (items, nested = false) => (
+    <ul
+      className={`${
+        nested
+          ? "pl-4 md:pl-0 md:absolute md:shadow-lg md:bg-white md:rounded-xl md:top-full md:left-0 md:min-w-[220px] space-y-1"
+          : "flex gap-6 flex-col md:flex-row"
+      }`}
+    >
+      {items.map((item, idx) => (
+        <li key={idx} className="relative">
+          <div className="flex justify-between items-center md:block">
+            <a
+              href={item.link}
+              className="block py-3 md:py-2 text-gray-700 hover:text-red-500 transition-colors duration-300 font-medium whitespace-nowrap"
+              onClick={(e) => {
+                if (mobileMenuOpen && item.subMenu) {
+                  e.preventDefault();
+                  toggleSubMenu(item.title);
                 }
-            </button>
+              }}
+            >
+              {item.title}
+            </a>
+            {item.subMenu && mobileMenuOpen && (
+              <button
+                onClick={() => toggleSubMenu(item.title)}
+                className="md:hidden text-gray-500 hover:text-red-500 px-2"
+              >
+                {openSubMenus[item.title] ? "-" : "+"}
+              </button>
+            )}
+          </div>
 
-            {/* Navigation links */}
-            <div className={`${open ? 'flex absolute top-14 left-0 w-full h-auto md:h-auto md:relative' : 'hidden'} flex-1 md:flex flex-col md:flex-row gap-x-5 gap-y-2 md:items-center md:p-0 sm:p-4 p-4 justify-between md:bg-transparent bg-neutral-100 md:shadow-none shadow-md rounded-md`}>
-                <ul className="list-none flex md:items-center items-start gap-x-5 gap-y-1 flex-wrap md:flex-row flex-col text-base text-neutral-600 dark:text-neutral-500 font-medium">
-                    {navLinks.map((link, index) => (
-                        <li key={index}>
-                            <Link
-                                to={link.href}
-                                onClick={handleClose}
-                                className="hover:text-violet-600 ease-in-out duration-300"
-                            >
-                                {link.label}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-
-                <div className="flex md:items-center items-start gap-x-5 gap-y-2 flex-wrap md:flex-row flex-col text-base font-medium text-neutral-800">
-                    <div className="relative bg-violet-600 rounded-md px-8 py-2 w-fit cursor-pointer">
-                        <div className="absolute top-[50%] -left-6 translate-y-[-50%] w-9 h-9 rounded-full bg-violet-600 border-4 border-neutral-100 dark:border-neutral-900 flex items-center justify-center">
-                            <FaPhone className='text-neutral-50 text-sm' />
-                        </div>
-                        <div className="space-y-0.5">
-                            <p className="text-xs text-neutral-200 font-light">
-                                Need Help?
-                            </p>
-                            <p className="text-xs font-normal text-neutral-50 tracking-wide">+91 1234567890</p>
-                        </div>
-                    </div>
-                    {/* Theme */}
-                    <Theme />
-                </div>
+          {item.subMenu && (
+            <div
+              className={`${
+                mobileMenuOpen
+                  ? openSubMenus[item.title]
+                    ? "block pl-4 space-y-1"
+                    : "hidden"
+                  : "hidden md:group-hover:block mt-1 z-50"
+              }`}
+            >
+              {renderMenu(item.subMenu, true)}
             </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 
+  return (
+    <nav className="w-full bg-white shadow-md fixed top-0 left-0 z-50">
+      <div className="flex items-center justify-between px-6 lg:px-20 h-20">
+        {/* Logo */}
+        <a href="/" className="text-2xl font-bold text-blue-600">
+          LogicForge <span className="text-gray-800">IT Solutions</span>
+        </a>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-8">{renderMenu(menuItems)}</div>
+
+        {/* Search & Icons */}
+        <div className="flex items-center gap-4 text-gray-600 text-md md:ml-4">
+          {/* Search */}
+          <form
+            className="hidden md:flex ml-6 flex border rounded-full overflow-hidden shadow-sm"
+            onSubmit={handleSearchSubmit}
+          >
+            <input
+              type="search"
+              placeholder="Search products…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-4 py-2 outline-none w-64 text-gray-700 placeholder-gray-400"
+            />
+            <button
+              type="submit"
+              className="bg-red-500 px-4 py-2 text-white flex items-center justify-center hover:bg-red-600 transition-colors duration-300"
+            >
+              <FaSearch />
+            </button>
+          </form>
+
+         
+          {/* User: Show Sign-in link or Clerk UserButton */}
+          {isSignedIn ? (
+            <UserButton afterSignOutUrl="/" />
+          ) : (
+            <Link to="/signin">
+              <FaUser className="cursor-pointer hover:text-blue-600 transition-colors duration-300" />
+            </Link>
+          )}
+
+          <div className="relative cursor-pointer hover:text-blue-600 transition-colors duration-300">
+            <FaShoppingCart />
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+              0
+            </span>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button className="md:hidden ml-4 text-2xl" onClick={toggleMobileMenu}>
+            {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
-    )
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-t shadow-md px-6 py-4 space-y-4">
+          {/* Mobile Search */}
+          <form
+            className="flex border rounded-full overflow-hidden mb-4"
+            onSubmit={handleSearchSubmit}
+          >
+            <input
+              type="search"
+              placeholder="Search products…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="px-4 py-2 outline-none w-full text-gray-700 placeholder-gray-400"
+            />
+            <button
+              type="submit"
+              className="bg-red-500 px-4 py-2 text-white flex items-center justify-center hover:bg-red-600 transition-colors duration-300"
+            >
+              <FaSearch />
+            </button>
+          </form>
+
+          {renderMenu(menuItems)}
+        </div>
+      )}
+    </nav>
+  );
 }
 
-export default Navbar
+export default Navbar;
